@@ -253,197 +253,84 @@
         <button class="std-btn" onclick="nextCard()" id="nextBtn">Następna</button>
     </div>
 
-    <script>
+<script>
         // ============================================================
-        // DANE
+        // DANE (Twoje pytania)
         // ============================================================
         
         const cardsData = [
-            // --- CZĘŚĆ II: MIKROSYSTEMY (Istniejące pytania) ---
+            // --- CZĘŚĆ II: MIKROSYSTEMY (Indeksy 0-18) ---
             { 
                 q: `Schemat blokowy mikrosystemu elektronicznego oraz funkcje jego bloków.`, 
-                img: "1.png",
-                extra: ["1_1.png", "1_2.png"]
-            },
-            { 
-                q: `Podstawowe zastosowania układów buforów magistrali 8-bitowej w systemach mk`, 
-                img: "2.png"
-            },
-            { 
-                q: `Schemat logiczny, znaczenie linii, przebiegi czasowe cyklów odczytu i zapisu asynchronicznej pamięci SRAM o dostępie równoległym i pojemności np. 512 KB.`, 
-                img: "3.png",
-                extra: ["3_1.png", "3_2.png"]
-            },
-            { 
-                q: `Schemat logiczny, znaczenie linii pamięci FLASH typu NOR o dostępie równoległym i pojemności np. 1 MB.`, 
-                img: "4.png",
-                extra: ["4_1.png"]
-            },
-            { 
-                q: `Schemat blokowy układów SPLD standardu GAL16V8 oraz funkcje jego bloków.`, 
-                img: "5.png",
-                extra: ["5_1.png"]
-            },
-            { 
-                q: `Tryby pracy układów SPLD standardu GAL16V8 oraz ich ograniczenia projektowe.`, 
-                img: "6.png"
-            },
-            { 
-                q: `Schemat blokowy architektury układów CPLD np. XC9500 oraz funkcje bloków zamieszczonych na tym schemacie.`, 
-                img: "7.png",
-                extra: ["7_1.png"]
-            },
-            { 
-                q: `Metody zapisu i odczytu danych oraz techniki adresowania układów peryferyjnych z interfejsem SPI.`, 
-                img: "8.png"
-            },
+                img: "1.png", extra: ["1_1.png", "1_2.png"] 
+            }, // Index 0 (Pewniak)
+            { q: `Podstawowe zastosowania układów buforów magistrali 8-bitowej w systemach mk`, img: "2.png" },
+            { q: `Schemat logiczny, znaczenie linii, przebiegi czasowe cyklów odczytu i zapisu asynchronicznej pamięci SRAM...`, img: "3.png", extra: ["3_1.png", "3_2.png"] },
+            { q: `Schemat logiczny, znaczenie linii pamięci FLASH typu NOR...`, img: "4.png", extra: ["4_1.png"] },
+            { q: `Schemat blokowy układów SPLD standardu GAL16V8...`, img: "5.png", extra: ["5_1.png"] },
+            { q: `Tryby pracy układów SPLD standardu GAL16V8...`, img: "6.png" },
+            { q: `Schemat blokowy architektury układów CPLD np. XC9500...`, img: "7.png", extra: ["7_1.png"] },
+            { q: `Metody zapisu i odczytu danych oraz techniki adresowania układów peryferyjnych z interfejsem SPI.`, img: "8.png" },
             { 
                 q: `Schemat ogólny, zasada działania (funkcje poszczególnych bloków) układu peryferyjnego z interfejsem SPI.`, 
-                img: "9.png",
-                extra: ["9_1.png", "9_2.png"]
-            },
-            { 
-                q: `Schemat blokowy pamięci o dostępie szeregowym z interfejsem SPI, znaczenie linii i funkcje jej bloków.`, 
-                img: "10.png",
-                extra: ["10_1.png", "10_2.png"]
-            },
-            { 
-                q: `Schemat blokowy układu cyfrowego czujnika temperatury z interfejsem SPI (np. AD7814), funkcje poszczególnych jego bloków, znaczenie linii układu, przebiegi czasowe interfejsu SPI.`, 
-                img: "11.png", 
-                extra: ["11_1.png", "11_2.png"]
-            },
-            { 
-                q: `Uogólniony schemat blokowy N-bitowych K-kanałowych przetworników A/C wyposażonych w interfejs SPI, funkcje poszczególnych bloków przetwornika A/C.`, 
-                img: "12.png",
-                extra: ["12_1.png"]
-            },
-            { 
-                q: `Ogólny schemat przetwornika cyfrowo-analogowego (C/A), funkcje poszczególnych bloków układu.`, 
-                img: "13.png",
-                extra: ["13_1.png"]
-            },
-            { 
-                q: `Schemat blokowy układu potencjometru cyfrowego sterowanego interfejsem SPI (np. AD5260), znaczenie linii układu, przebiegi czasowe interfejsu SPI.`, 
-                img: "14.png",
-                extra: ["14_1.png", "14_2.png"]
-            },
-            { 
-                q: `Przyczyny stosowania zewnętrznych kontrolerów interfejsów szeregowych np. USB, CAN, Ethernet, czy radiowych układów nadawczo-odbiorczych na 2,4 GHz.`, 
-                img: "15.png"
-            },
-            { 
-                q: `Schemat blokowy kontrolerów interfejsów szeregowych sterowanych interfejsem SPI, funkcje poszczególnych ich bloków, znaczenie linii układów.`, 
-                img: "16.png",
-                extra: ["16_1.png", "16_2.png"]
-            },
-            { 
-                q: `Schemat blokowy mikroserwera TCP/IP bazującego na kontrolerze Ethernet (np. ENC28J60) sterowanym interfejsem SPI, funkcje poszczególnych bloków mikroserwera TCP/IP.`, 
-                img: "17.png",
-                extra: ["17_1.png"]
-            },
-            { 
-                q: `Schemat blokowy bezprzewodowego systemu elektronicznego bazującego na kontrolerze ZigBee (np. AT86RF230), główne cechy standardu ZigBee.`, 
-                img: "18.png",
-                extra: ["18_1.png"]
-            },
-            { 
-                q: `Schemat blokowy układów MEMS sterowanych interfejsem SPI, funkcje poszczególnych bloków układów, znaczenie linii układów.`, 
-                img: "19.png",
-                extra: ["19_1.png", "19_2.png"]
-            },
+                img: "9.png", extra: ["9_1.png", "9_2.png"] 
+            }, // Index 8 (Pewniak)
+            { q: `Schemat blokowy pamięci o dostępie szeregowym z interfejsem SPI...`, img: "10.png", extra: ["10_1.png", "10_2.png"] },
+            { q: `Schemat blokowy układu cyfrowego czujnika temperatury z interfejsem SPI...`, img: "11.png", extra: ["11_1.png", "11_2.png"] },
+            { q: `Uogólniony schemat blokowy N-bitowych K-kanałowych przetworników A/C...`, img: "12.png", extra: ["12_1.png"] },
+            { q: `Ogólny schemat przetwornika cyfrowo-analogowego (C/A)...`, img: "13.png", extra: ["13_1.png"] },
+            { q: `Schemat blokowy układu potencjometru cyfrowego sterowanego interfejsem SPI...`, img: "14.png", extra: ["14_1.png", "14_2.png"] },
+            { q: `Przyczyny stosowania zewnętrznych kontrolerów interfejsów szeregowych...`, img: "15.png" },
+            { q: `Schemat blokowy kontrolerów interfejsów szeregowych sterowanych interfejsem SPI...`, img: "16.png", extra: ["16_1.png", "16_2.png"] },
+            { q: `Schemat blokowy mikroserwera TCP/IP bazującego na kontrolerze Ethernet...`, img: "17.png", extra: ["17_1.png"] },
+            { q: `Schemat blokowy bezprzewodowego systemu elektronicznego bazującego na kontrolerze ZigBee...`, img: "18.png", extra: ["18_1.png"] },
+            { q: `Schemat blokowy układów MEMS sterowanych interfejsem SPI...`, img: "19.png", extra: ["19_1.png", "19_2.png"] },
 
-            // --- CZĘŚĆ I: MIKROKONTROLERY (Dodane pytania 1-19) ---
-            {
-                q: `1. Definicja mikrokontrolera (mk), dwie najważniejsze cechy jego jednostki centralnej.`,
-                img: "20.png"
-            },
-            {
-                q: `2. Uszczegółowiona budowa mk oraz funkcje realizowane przez jego bloki.`,
-                img: "21.png"
-            },
-            {
-                q: `3. Budowa mikroprocesora z punktu widzenia programisty (funkcje bloków i rejestrów).`,
-                img: "22.png",
-                extra: ["22_1.png"]
-            },
-            {
-                q: `4. Cechy architektury harwardzkiej procesorów rdzeniowych.`,
-                img: "23.png"
-            },
-            {
-                q: `5. Cechy architektury Von-Neumanna procesorów rdzeniowych.`,
-                img: "24.png"
-            },
-            {
-                q: `6. Funkcje i typy pamięci zaimplementowanych w mk.`,
-                img: "25.png"
-            },
-            {
-                q: `7. Warstwowy model mk zamkniętego.`,
-                img: "26.png"
-            },
-            {
-                q: `8. Przeznaczenia sygnału RESET i źródła sygnału RESET w mk.`,
-                img: "27.png"
-            },
-            {
-                q: `9. Budowa i zasada działania linii portów równoległych.`,
-                img: "28.png",
-                extra: ["28_1.png"]
-            },
-            {
-                q: `10. Właściwości układów peryferyjnych mk.`,
-                img: "29.png"
-            },
-            {
-                q: `11. Schematyczna budowa układu czasowego w mk oraz jego zasada pracy w dwóch podstawowych konfiguracjach.`,
-                img: "30.png",
-                extra: ["30_1.png"]
-            },
-            {
-                q: `12. Budowa, zasada działania i typowe parametry wewnętrznego przetwornika A/C w mk.`,
-                img: "31.png",
-                extra: ["31_1.png"]
-            },
-            {
-                q: `13. Sterowanie oraz sposób odczytu i zapisu danych do wewnętrznej pamięci EEPROM.`,
-                img: "32.png"
-            },
-            {
-                q: `14. Schematyczna budowa sterownika komunikacji szeregowej w mk oraz realizowane przez niego funkcje.`,
-                img: "33.png"
-            },
-            {
-                q: `15. Format danych dla standardu UART, budowa kontrolera interfejsu UART oraz ogólna jego obsługa.`,
-                img: "34.png",
-            },
-            {
-                q: `16. Przebiegi czasowe interfejsu SPI. (Uwaga na fazy CPHA!)`,
-                img: "35.png",
-                extra: ["35_1.png"]
-            },
-            {
-                q: `17. Pojęcie rodziny mk. Modyfikacje członków rodziny mk.`,
-                img: "36.png"
-            },
-            {
-                q: `18. Definicja programowania zagnieżdżonego i cechy programów zagnieżdżonych.`,
-                img: "37.png"
-            },
-            {
-                q: `19. Metody uruchamiania programów napisanych na mk.`,
-                img: "38.png"
-            }
+            // --- CZĘŚĆ I: MIKROKONTROLERY (Indeksy 19-37) ---
+            { q: `1. Definicja mikrokontrolera (mk), dwie najważniejsze cechy jego jednostki centralnej.`, img: "20.png" }, // Index 19
+            { 
+                q: `2. Uszczegółowiona budowa mk oraz funkcje realizowane przez jego bloki.`, 
+                img: "21.png" 
+            }, // Index 20 (Pewniak - img 21)
+            { q: `3. Budowa mikroprocesora z punktu widzenia programisty (funkcje bloków i rejestrów).`, img: "22.png", extra: ["22_1.png"] }, // Index 21
+            { 
+                q: `4. Cechy architektury harwardzkiej procesorów rdzeniowych.`, 
+                img: "23.png" 
+            }, // Index 22 (Pewniak - img 23)
+            { q: `5. Cechy architektury Von-Neumanna procesorów rdzeniowych.`, img: "24.png" },
+            { q: `6. Funkcje i typy pamięci zaimplementowanych w mk.`, img: "25.png" },
+            { q: `7. Warstwowy model mk zamkniętego.`, img: "26.png" },
+            { q: `8. Przeznaczenia sygnału RESET i źródła sygnału RESET w mk.`, img: "27.png" },
+            { q: `9. Budowa i zasada działania linii portów równoległych.`, img: "28.png", extra: ["28_1.png"] },
+            { q: `10. Właściwości układów peryferyjnych mk.`, img: "29.png" },
+            { q: `11. Schematyczna budowa układu czasowego w mk oraz jego zasada pracy w dwóch podstawowych konfiguracjach.`, img: "30.png", extra: ["30_1.png"] },
+            { q: `12. Budowa, zasada działania i typowe parametry wewnętrznego przetwornika A/C w mk.`, img: "31.png", extra: ["31_1.png"] },
+            { q: `13. Sterowanie oraz sposób odczytu i zapisu danych do wewnętrznej pamięci EEPROM.`, img: "32.png" },
+            { q: `14. Schematyczna budowa sterownika komunikacji szeregowej w mk oraz realizowane przez niego funkcje.`, img: "33.png" },
+            { q: `15. Format danych dla standardu UART, budowa kontrolera interfejsu UART oraz ogólna jego obsługa.`, img: "34.png", extra: ["34_1.png"] },
+            { q: `16. Przebiegi czasowe interfejsu SPI. (Uwaga na fazy CPHA!)`, img: "35.png", extra: ["35_1.png"] },
+            { q: `17. Pojęcie rodziny mk. Modyfikacje członków rodziny mk.`, img: "36.png" },
+            { q: `18. Definicja programowania zagnieżdżonego i cechy programów zagnieżdżonych.`, img: "37.png" },
+            { q: `19. Metody uruchamiania programów napisanych na mk.`, img: "38.png" }
         ];
 
         // ============================================================
         // LOGIKA APLIKACJI
         // ============================================================
         
+        // INDEKSY PEWNIAKÓW (Liczone od 0 w tablicy powyżej):
+        // 0  -> Pytanie 1 z II cz. (Schemat MSE, img 1.png)
+        // 8  -> Pytanie 9 z II cz. (Schemat ogólny SPI, img 9.png)
+        // 20 -> Pytanie 2 z I cz. (Budowa mk, img 21.png)
+        // 22 -> Pytanie 4 z I cz. (Architektura Harwardzka, img 23.png - o to prosiłeś jako '23')
+        const pewniakiIds = [0, 8, 20, 21];
+
         let isShuffle = false;
-        let isLearnMode = false;
-        let knownCards = new Set(); 
         
+        // TRYBY NAUKI: 0 = WSZYSTKIE, 1 = NIEZNANE, 2 = PEWNIAKI
+        let learnMode = 0; 
+
+        let knownCards = new Set(); 
         let playList = []; 
         let currentIndex = 0; 
         let slideIndex = 0;    
@@ -552,7 +439,6 @@
         }
 
         function updateKnowledgeButtons(realIndex) {
-            // Reset stylów
             btnKnown.classList.remove('btn-known-active');
             btnUnknown.classList.remove('btn-unknown-active');
 
@@ -580,10 +466,14 @@
         function updatePlaylist() {
             let newPlaylist = cardsData.map((_, i) => i);
 
-            if (isLearnMode) {
+            // Filtrowanie w zależności od trybu
+            if (learnMode === 1) { // NIEZNANE
                 newPlaylist = newPlaylist.filter(idx => !knownCards.has(idx));
+            } else if (learnMode === 2) { // PEWNIAKI
+                newPlaylist = newPlaylist.filter(idx => pewniakiIds.includes(idx));
             }
 
+            // Losowanie (jeśli włączone)
             if (isShuffle) {
                 for (let i = newPlaylist.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
@@ -603,10 +493,27 @@
             updatePlaylist();
         }
 
+        // ZMIENIONA FUNKCJA ZMIANY TRYBU (3 stany)
         function toggleLearnMode() {
-            isLearnMode = !isLearnMode;
-            learnModeBtn.classList.toggle('active');
-            learnModeBtn.innerText = isLearnMode ? "🎓 Tryb: NIEZNANE" : "🎓 Tryb: WSZYSTKIE";
+            learnMode = (learnMode + 1) % 3; // Cykl: 0 -> 1 -> 2 -> 0
+
+            learnModeBtn.classList.remove('active');
+            learnModeBtn.style.backgroundColor = ""; 
+            learnModeBtn.style.borderColor = "";
+
+            if (learnMode === 0) {
+                learnModeBtn.innerText = "🎓 Tryb: WSZYSTKIE";
+            } else if (learnMode === 1) {
+                learnModeBtn.innerText = "🎓 Tryb: NIEZNANE";
+                learnModeBtn.classList.add('active');
+            } else if (learnMode === 2) {
+                learnModeBtn.innerText = "🔥 Tryb: PEWNIAKI";
+                // Specjalny styl dla Pewniaków (pomarańczowy/ogień)
+                learnModeBtn.style.backgroundColor = "#ff5722";
+                learnModeBtn.style.borderColor = "#ff5722";
+                learnModeBtn.style.color = "white";
+            }
+            
             updatePlaylist();
         }
 
@@ -618,7 +525,8 @@
 
             if (known) {
                 knownCards.add(realIndex);
-                if (isLearnMode) {
+                // Jeśli jesteśmy w trybie "Nieznane", usuń kartę z listy po oznaczeniu
+                if (learnMode === 1) {
                     setTimeout(() => updatePlaylist(), 500);
                 }
             } else {
@@ -635,9 +543,9 @@
         }
 
         init();
-
     </script>
 
 </body>
 </html>
+
 
