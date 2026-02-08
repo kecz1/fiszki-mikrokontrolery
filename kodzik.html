@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8">
+    <title>Trener Układów - Multi Slide (Full)</title>
+    <style>
+        /* Tło i ustawienia ogólne */
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: #1a1a2e;
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* GÓRNY PASEK OPCJI */
+        .top-bar {
+            position: absolute;
+            top: 15px;
+            display: flex;
+            gap: 15px;
+            z-index: 20;
+        }
+
+        .toggle-btn {
+            background-color: #16213e;
+            border: 2px solid #0f3460;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: #ddd;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn.active {
+            background-color: #e94560;
+            border-color: #e94560;
+            color: white;
+            box-shadow: 0 0 10px rgba(233, 69, 96, 0.4);
+        }
+
+        /* Kontener karty */
+        .card-container {
+            width: 95vw;
+            height: 75vh; 
+            max-width: 1400px;
+            perspective: 1500px;
+            cursor: pointer;
+            margin-top: 50px;
+            margin-bottom: 15px;
+        }
+
+        /* Fiszka */
+        .flashcard {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 10px;
+            box-sizing: border-box;
+            background: #ffffff;
+            color: #333;
+        }
+
+        /* Tył karty */
+        .card-face-back {
+            transform: rotateY(180deg);
+            background: #f8f9fa;
+        }
+
+        /* Tekst pytania */
+        .card-face h2 {
+            margin: 0;
+            font-size: 1.6rem;
+            text-align: center;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 100%;
+        }
+
+        /* Obrazek */
+        .card-face img {
+            max-width: 100%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 8px;
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        /* --- JEDEN RZĄD PRZYCISKÓW NA DOLE --- */
+        .controls-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        /* Klasa bazowa dla przycisku */
+        .std-btn {
+            background-color: #0f3460;
+            color: white;
+            border: none;
+            padding: 12px 20px; 
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+            min-width: 110px;
+        }
+
+        .std-btn:hover {
+            background-color: #1a4b85;
+        }
+
+        .std-btn:active {
+            transform: scale(0.98);
+        }
+
+        .std-btn:disabled {
+            background-color: #444;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Specyficzne kolory aktywne dla przycisków wiedzy */
+        .btn-unknown-active {
+            background-color: #c62828 !important; /* Czerwony */
+            box-shadow: 0 0 10px rgba(198, 40, 40, 0.5);
+        }
+        
+        .btn-known-active {
+            background-color: #2e7d32 !important; /* Zielony */
+            box-shadow: 0 0 10px rgba(46, 125, 50, 0.5);
+        }
+
+        #counter {
+            font-size: 1.2rem;
+            min-width: 70px;
+            text-align: center;
+            color: #ccc;
+            margin: 0 5px;
+        }
+
+        /* Dymek z podpowiedzią */
+        .hint-badge {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 1rem;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        /* Status braku kart */
+        .empty-state {
+            display: none;
+            position: absolute;
+            text-align: center;
+            font-size: 2rem;
+            color: #4dff88;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <button class="toggle-btn" id="shuffleBtn" onclick="toggleShuffle()">🔀 Losowanie: OFF</button>
+        <button class="toggle-btn" id="learnModeBtn" onclick="toggleLearnMode()">🎓 Tryb: WSZYSTKIE</button>
+        <button class="toggle-btn" style="background:#333; border-color:#555;" onclick="resetProgress()">↺ Reset wiedzy</button>
+    </div>
+
+    <div id="emptyState" class="empty-state">
+        🎉 Wszystko umiesz!<br>Zresetuj postęp lub wyłącz tryb nauki.
+    </div>
+
+    <div class="card-container" id="cardContainer" onclick="handleCardClick()">
+        <div class="flashcard" id="card">
+            
+            <div class="card-face card-face-front">
+                <h2 id="question">Ładowanie...</h2>
+            </div>
+            
+            <div class="card-face card-face-back">
+                <img id="image-display" src="" alt="Schemat">
+                <div id="hint" class="hint-badge" style="display: none;"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="controls-row">
+        <button class="std-btn" onclick="prevCard()" id="prevBtn">Poprzednia</button>
+        
+        <button class="std-btn" id="btnUnknown" onclick="markCard(false, event)">Nie umiem</button>
+        <div id="counter">1 / 1</div>
+        <button class="std-btn" id="btnKnown" onclick="markCard(true, event)">Umiem</button>
+        
+        <button class="std-btn" onclick="nextCard()" id="nextBtn">Następna</button>
+    </div>
+
+    <script>
+        // ============================================================
+        // DANE
+        // ============================================================
+        
+        const cardsData = [
+            // --- CZĘŚĆ II: MIKROSYSTEMY (Istniejące pytania) ---
+            { 
+                q: `Schemat blokowy mikrosystemu elektronicznego oraz funkcje jego bloków.`, 
+                img: "1.png",
+                extra: ["1_1.png", "1_2.png"]
+            },
+            { 
+                q: `Podstawowe zastosowania układów buforów magistrali 8-bitowej w systemach mk`, 
+                img: "2.png"
+            },
+            { 
+                q: `Schemat logiczny, znaczenie linii, przebiegi czasowe cyklów odczytu i zapisu asynchronicznej pamięci SRAM o dostępie równoległym i pojemności np. 512 KB.`, 
+                img: "3.png",
+                extra: ["3_1.png", "3_2.png"]
+            },
+            { 
+                q: `Schemat logiczny, znaczenie linii pamięci FLASH typu NOR o dostępie równoległym i pojemności np. 1 MB.`, 
+                img: "4.png",
+                extra: ["4_1.png"]
+            },
+            { 
+                q: `Schemat blokowy układów SPLD standardu GAL16V8 oraz funkcje jego bloków.`, 
+                img: "5.png",
+                extra: ["5_1.png"]
+            },
+            { 
+                q: `Tryby pracy układów SPLD standardu GAL16V8 oraz ich ograniczenia projektowe.`, 
+                img: "6.png"
+            },
+            { 
+                q: `Schemat blokowy architektury układów CPLD np. XC9500 oraz funkcje bloków zamieszczonych na tym schemacie.`, 
+                img: "7.png",
+                extra: ["7_1.png"]
+            },
+            { 
+                q: `Metody zapisu i odczytu danych oraz techniki adresowania układów peryferyjnych z interfejsem SPI.`, 
+                img: "8.png"
+            },
+            { 
+                q: `Schemat ogólny, zasada działania (funkcje poszczególnych bloków) układu peryferyjnego z interfejsem SPI.`, 
+                img: "9.png",
+                extra: ["9_1.png", "9_2.png"]
+            },
+            { 
+                q: `Schemat blokowy pamięci o dostępie szeregowym z interfejsem SPI, znaczenie linii i funkcje jej bloków.`, 
+                img: "10.png",
+                extra: ["10_1.png", "10_2.png"]
+            },
+            { 
+                q: `Schemat blokowy układu cyfrowego czujnika temperatury z interfejsem SPI (np. AD7814), funkcje poszczególnych jego bloków, znaczenie linii układu, przebiegi czasowe interfejsu SPI.`, 
+                img: "11.png", 
+                extra: ["11_1.png", "11_2.png"]
+            },
+            { 
+                q: `Uogólniony schemat blokowy N-bitowych K-kanałowych przetworników A/C wyposażonych w interfejs SPI, funkcje poszczególnych bloków przetwornika A/C.`, 
+                img: "12.png",
+                extra: ["12_1.png"]
+            },
+            { 
+                q: `Ogólny schemat przetwornika cyfrowo-analogowego (C/A), funkcje poszczególnych bloków układu.`, 
+                img: "13.png",
+                extra: ["13_1.png"]
+            },
+            { 
+                q: `Schemat blokowy układu potencjometru cyfrowego sterowanego interfejsem SPI (np. AD5260), znaczenie linii układu, przebiegi czasowe interfejsu SPI.`, 
+                img: "14.png",
+                extra: ["14_1.png", "14_2.png"]
+            },
+            { 
+                q: `Przyczyny stosowania zewnętrznych kontrolerów interfejsów szeregowych np. USB, CAN, Ethernet, czy radiowych układów nadawczo-odbiorczych na 2,4 GHz.`, 
+                img: "15.png"
+            },
+            { 
+                q: `Schemat blokowy kontrolerów interfejsów szeregowych sterowanych interfejsem SPI, funkcje poszczególnych ich bloków, znaczenie linii układów.`, 
+                img: "16.png",
+                extra: ["16_1.png", "16_2.png"]
+            },
+            { 
+                q: `Schemat blokowy mikroserwera TCP/IP bazującego na kontrolerze Ethernet (np. ENC28J60) sterowanym interfejsem SPI, funkcje poszczególnych bloków mikroserwera TCP/IP.`, 
+                img: "17.png",
+                extra: ["17_1.png"]
+            },
+            { 
+                q: `Schemat blokowy bezprzewodowego systemu elektronicznego bazującego na kontrolerze ZigBee (np. AT86RF230), główne cechy standardu ZigBee.`, 
+                img: "18.png",
+                extra: ["18_1.png"]
+            },
+            { 
+                q: `Schemat blokowy układów MEMS sterowanych interfejsem SPI, funkcje poszczególnych bloków układów, znaczenie linii układów.`, 
+                img: "19.png",
+                extra: ["19_1.png", "19_2.png"]
+            },
+
+            // --- CZĘŚĆ I: MIKROKONTROLERY (Dodane pytania 1-19) ---
+            {
+                q: `1. Definicja mikrokontrolera (mk), dwie najważniejsze cechy jego jednostki centralnej.`,
+                img: "20.png"
+            },
+            {
+                q: `2. Uszczegółowiona budowa mk oraz funkcje realizowane przez jego bloki.`,
+                img: "21.png"
+            },
+            {
+                q: `3. Budowa mikroprocesora z punktu widzenia programisty (funkcje bloków i rejestrów).`,
+                img: "22.png",
+                extra: ["22_1.png"]
+            },
+            {
+                q: `4. Cechy architektury harwardzkiej procesorów rdzeniowych.`,
+                img: "23.png"
+            },
+            {
+                q: `5. Cechy architektury Von-Neumanna procesorów rdzeniowych.`,
+                img: "24.png"
+            },
+            {
+                q: `6. Funkcje i typy pamięci zaimplementowanych w mk.`,
+                img: "25.png"
+            },
+            {
+                q: `7. Warstwowy model mk zamkniętego.`,
+                img: "26.png"
+            },
+            {
+                q: `8. Przeznaczenia sygnału RESET i źródła sygnału RESET w mk.`,
+                img: "27.png"
+            },
+            {
+                q: `9. Budowa i zasada działania linii portów równoległych.`,
+                img: "28.png",
+                extra: ["28_1.png"]
+            },
+            {
+                q: `10. Właściwości układów peryferyjnych mk.`,
+                img: "29.png"
+            },
+            {
+                q: `11. Schematyczna budowa układu czasowego w mk oraz jego zasada pracy w dwóch podstawowych konfiguracjach.`,
+                img: "30.png",
+                extra: ["30_1.png"]
+            },
+            {
+                q: `12. Budowa, zasada działania i typowe parametry wewnętrznego przetwornika A/C w mk.`,
+                img: "31.png",
+                extra: ["31_1.png"]
+            },
+            {
+                q: `13. Sterowanie oraz sposób odczytu i zapisu danych do wewnętrznej pamięci EEPROM.`,
+                img: "32.png"
+            },
+            {
+                q: `14. Schematyczna budowa sterownika komunikacji szeregowej w mk oraz realizowane przez niego funkcje.`,
+                img: "33.png"
+            },
+            {
+                q: `15. Format danych dla standardu UART, budowa kontrolera interfejsu UART oraz ogólna jego obsługa.`,
+                img: "34.png",
+            },
+            {
+                q: `16. Przebiegi czasowe interfejsu SPI. (Uwaga na fazy CPHA!)`,
+                img: "35.png",
+                extra: ["35_1.png"]
+            },
+            {
+                q: `17. Pojęcie rodziny mk. Modyfikacje członków rodziny mk.`,
+                img: "36.png"
+            },
+            {
+                q: `18. Definicja programowania zagnieżdżonego i cechy programów zagnieżdżonych.`,
+                img: "37.png"
+            },
+            {
+                q: `19. Metody uruchamiania programów napisanych na mk.`,
+                img: "38.png"
+            }
+        ];
+
+        // ============================================================
+        // LOGIKA APLIKACJI
+        // ============================================================
+        
+        let isShuffle = false;
+        let isLearnMode = false;
+        let knownCards = new Set(); 
+        
+        let playList = []; 
+        let currentIndex = 0; 
+        let slideIndex = 0;    
+        
+        const cardElement = document.getElementById('card');
+        const cardContainer = document.getElementById('cardContainer');
+        const questionElement = document.getElementById('question');
+        const imageElement = document.getElementById('image-display');
+        const counterElement = document.getElementById('counter');
+        const hintElement = document.getElementById('hint');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const emptyState = document.getElementById('emptyState');
+        
+        const btnUnknown = document.getElementById('btnUnknown');
+        const btnKnown = document.getElementById('btnKnown');
+        
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const learnModeBtn = document.getElementById('learnModeBtn');
+
+        function init() {
+            playList = cardsData.map((_, i) => i);
+            updatePlaylist();
+        }
+
+        function handleCardClick() {
+            if (playList.length === 0) return;
+
+            const realIndex = playList[currentIndex];
+            const currentData = cardsData[realIndex];
+            const allImages = [currentData.img, ...(currentData.extra || [])];
+            const isFlipped = cardElement.classList.contains('is-flipped');
+
+            if (!isFlipped) {
+                slideIndex = 0;
+                imageElement.src = allImages[0];
+                cardElement.classList.add('is-flipped');
+                updateHint(allImages.length, slideIndex);
+            }
+            else {
+                if (slideIndex < allImages.length - 1) {
+                    slideIndex++;
+                    imageElement.src = allImages[slideIndex]; 
+                    updateHint(allImages.length, slideIndex);
+                } 
+                else {
+                    cardElement.classList.remove('is-flipped');
+                    slideIndex = 0;
+                }
+            }
+        }
+
+        function updateHint(totalImages, currentSlide) {
+            if (totalImages > 1) {
+                hintElement.style.display = 'block';
+                if (currentSlide < totalImages - 1) {
+                    hintElement.innerText = `Slajd ${currentSlide + 1}/${totalImages} 👉 Kliknij po więcej`;
+                } else {
+                    hintElement.innerText = `Slajd ${currentSlide + 1}/${totalImages} ↩ Kliknij, aby wrócić`;
+                }
+            } else {
+                hintElement.style.display = 'none';
+            }
+        }
+
+        function updateCard() {
+            cardElement.classList.remove('is-flipped');
+            slideIndex = 0;
+            hintElement.style.display = 'none';
+            
+            if (playList.length === 0) {
+                cardContainer.style.display = 'none';
+                emptyState.style.display = 'block';
+                counterElement.innerText = "0 / 0";
+                
+                // Blokada przycisków
+                prevBtn.disabled = true;
+                nextBtn.disabled = true;
+                btnUnknown.disabled = true;
+                btnKnown.disabled = true;
+                return;
+            }
+
+            cardContainer.style.display = 'block';
+            emptyState.style.display = 'none';
+            
+            // Odblokuj przyciski oceny
+            btnUnknown.disabled = false;
+            btnKnown.disabled = false;
+
+            setTimeout(() => {
+                const realIndex = playList[currentIndex];
+                const data = cardsData[realIndex];
+                
+                questionElement.innerText = data.q;
+                imageElement.src = data.img;
+
+                counterElement.innerText = `${currentIndex + 1} / ${playList.length}`;
+                
+                prevBtn.disabled = currentIndex === 0;
+                nextBtn.disabled = currentIndex === playList.length - 1;
+
+                updateKnowledgeButtons(realIndex);
+
+            }, 200);
+        }
+
+        function updateKnowledgeButtons(realIndex) {
+            // Reset stylów
+            btnKnown.classList.remove('btn-known-active');
+            btnUnknown.classList.remove('btn-unknown-active');
+
+            if (knownCards.has(realIndex)) {
+                btnKnown.classList.add('btn-known-active');
+            } else {
+                btnUnknown.classList.add('btn-unknown-active');
+            }
+        }
+
+        function nextCard() {
+            if (currentIndex < playList.length - 1) {
+                currentIndex++;
+                updateCard();
+            }
+        }
+
+        function prevCard() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCard();
+            }
+        }
+
+        function updatePlaylist() {
+            let newPlaylist = cardsData.map((_, i) => i);
+
+            if (isLearnMode) {
+                newPlaylist = newPlaylist.filter(idx => !knownCards.has(idx));
+            }
+
+            if (isShuffle) {
+                for (let i = newPlaylist.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [newPlaylist[i], newPlaylist[j]] = [newPlaylist[j], newPlaylist[i]];
+                }
+            }
+
+            playList = newPlaylist;
+            currentIndex = 0;
+            updateCard();
+        }
+
+        function toggleShuffle() {
+            isShuffle = !isShuffle;
+            shuffleBtn.classList.toggle('active');
+            shuffleBtn.innerText = isShuffle ? "🔀 Losowanie: ON" : "🔀 Losowanie: OFF";
+            updatePlaylist();
+        }
+
+        function toggleLearnMode() {
+            isLearnMode = !isLearnMode;
+            learnModeBtn.classList.toggle('active');
+            learnModeBtn.innerText = isLearnMode ? "🎓 Tryb: NIEZNANE" : "🎓 Tryb: WSZYSTKIE";
+            updatePlaylist();
+        }
+
+        function markCard(known, event) {
+            if(event) event.stopPropagation();
+            if (playList.length === 0) return;
+
+            const realIndex = playList[currentIndex];
+
+            if (known) {
+                knownCards.add(realIndex);
+                if (isLearnMode) {
+                    setTimeout(() => updatePlaylist(), 500);
+                }
+            } else {
+                knownCards.delete(realIndex);
+            }
+            updateKnowledgeButtons(realIndex);
+        }
+
+        function resetProgress() {
+            if(confirm("Czy na pewno chcesz zresetować postęp nauki?")) {
+                knownCards.clear();
+                updatePlaylist();
+            }
+        }
+
+        init();
+
+    </script>
+
+</body>
+</html>
