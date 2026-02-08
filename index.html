@@ -252,14 +252,13 @@
         
         <button class="std-btn" onclick="nextCard()" id="nextBtn">Następna</button>
     </div>
-
 <script>
         // ============================================================
-        // DANE (Twoje pytania)
+        // DANE
         // ============================================================
         
         const cardsData = [
-            // --- CZĘŚĆ II: MIKROSYSTEMY (Indeksy 0-18) ---
+            // --- CZĘŚĆ II: MIKROSYSTEMY (Kolokwium 2) -> Indeksy 0 - 18 ---
             { 
                 q: `Schemat blokowy mikrosystemu elektronicznego oraz funkcje jego bloków.`, 
                 img: "1.png", extra: ["1_1.png", "1_2.png"] 
@@ -286,17 +285,17 @@
             { q: `Schemat blokowy bezprzewodowego systemu elektronicznego bazującego na kontrolerze ZigBee...`, img: "18.png", extra: ["18_1.png"] },
             { q: `Schemat blokowy układów MEMS sterowanych interfejsem SPI...`, img: "19.png", extra: ["19_1.png", "19_2.png"] },
 
-            // --- CZĘŚĆ I: MIKROKONTROLERY (Indeksy 19-37) ---
+            // --- CZĘŚĆ I: MIKROKONTROLERY (Kolokwium 1) -> Indeksy 19 - 37 ---
             { q: `1. Definicja mikrokontrolera (mk), dwie najważniejsze cechy jego jednostki centralnej.`, img: "20.png" }, // Index 19
             { 
                 q: `2. Uszczegółowiona budowa mk oraz funkcje realizowane przez jego bloki.`, 
                 img: "21.png" 
-            }, // Index 20 (Pewniak - img 21)
-            { q: `3. Budowa mikroprocesora z punktu widzenia programisty (funkcje bloków i rejestrów).`, img: "22.png", extra: ["22_1.png"] }, // Index 21
+            }, // Index 20 (Pewniak)
             { 
-                q: `4. Cechy architektury harwardzkiej procesorów rdzeniowych.`, 
-                img: "23.png" 
-            }, // Index 22 (Pewniak - img 23)
+                q: `3. Budowa mikroprocesora z punktu widzenia programisty (funkcje bloków i rejestrów).`, 
+                img: "22.png", extra: ["22_1.png"] 
+            }, // Index 21 (Pewniak - POPRAWIONY)
+            { q: `4. Cechy architektury harwardzkiej procesorów rdzeniowych.`, img: "23.png" }, // Index 22
             { q: `5. Cechy architektury Von-Neumanna procesorów rdzeniowych.`, img: "24.png" },
             { q: `6. Funkcje i typy pamięci zaimplementowanych w mk.`, img: "25.png" },
             { q: `7. Warstwowy model mk zamkniętego.`, img: "26.png" },
@@ -318,16 +317,26 @@
         // LOGIKA APLIKACJI
         // ============================================================
         
-        // INDEKSY PEWNIAKÓW (Liczone od 0 w tablicy powyżej):
-        // 0  -> Pytanie 1 z II cz. (Schemat MSE, img 1.png)
-        // 8  -> Pytanie 9 z II cz. (Schemat ogólny SPI, img 9.png)
-        // 20 -> Pytanie 2 z I cz. (Budowa mk, img 21.png)
-        // 22 -> Pytanie 4 z I cz. (Architektura Harwardzka, img 23.png - o to prosiłeś jako '23')
+        // PEWNIAKI:
+        // 0 -> MSE (Schemat)
+        // 8 -> SPI (Ogólny)
+        // 20 -> Budowa mk
+        // 21 -> Budowa programisty (Rejestry)
         const pewniakiIds = [0, 8, 20, 21];
+
+        // PUNKT PODZIAŁU:
+        // Indeksy < 19 to Kolokwium 2 (Mikrosystemy)
+        // Indeksy >= 19 to Kolokwium 1 (Mikrokontrolery)
+        const splitIndex = 19;
 
         let isShuffle = false;
         
-        // TRYBY NAUKI: 0 = WSZYSTKIE, 1 = NIEZNANE, 2 = PEWNIAKI
+        // TRYBY NAUKI: 
+        // 0 = WSZYSTKIE
+        // 1 = NIEZNANE
+        // 2 = PEWNIAKI
+        // 3 = KOLOKWIUM 1 (MK)
+        // 4 = KOLOKWIUM 2 (MSE)
         let learnMode = 0; 
 
         let knownCards = new Set(); 
@@ -469,8 +478,15 @@
             // Filtrowanie w zależności od trybu
             if (learnMode === 1) { // NIEZNANE
                 newPlaylist = newPlaylist.filter(idx => !knownCards.has(idx));
-            } else if (learnMode === 2) { // PEWNIAKI
+            } 
+            else if (learnMode === 2) { // PEWNIAKI
                 newPlaylist = newPlaylist.filter(idx => pewniakiIds.includes(idx));
+            }
+            else if (learnMode === 3) { // KOLOKWIUM 1 (Mikrokontrolery - cz. I)
+                newPlaylist = newPlaylist.filter(idx => idx >= splitIndex);
+            }
+            else if (learnMode === 4) { // KOLOKWIUM 2 (Mikrosystemy - cz. II)
+                newPlaylist = newPlaylist.filter(idx => idx < splitIndex);
             }
 
             // Losowanie (jeśli włączone)
@@ -493,13 +509,14 @@
             updatePlaylist();
         }
 
-        // ZMIENIONA FUNKCJA ZMIANY TRYBU (3 stany)
+        // ZMIENIONA FUNKCJA ZMIANY TRYBU (5 stanów)
         function toggleLearnMode() {
-            learnMode = (learnMode + 1) % 3; // Cykl: 0 -> 1 -> 2 -> 0
+            learnMode = (learnMode + 1) % 5; // Cykl 0->1->2->3->4->0
 
             learnModeBtn.classList.remove('active');
             learnModeBtn.style.backgroundColor = ""; 
             learnModeBtn.style.borderColor = "";
+            learnModeBtn.style.color = "";
 
             if (learnMode === 0) {
                 learnModeBtn.innerText = "🎓 Tryb: WSZYSTKIE";
@@ -508,9 +525,18 @@
                 learnModeBtn.classList.add('active');
             } else if (learnMode === 2) {
                 learnModeBtn.innerText = "🔥 Tryb: PEWNIAKI";
-                // Specjalny styl dla Pewniaków (pomarańczowy/ogień)
-                learnModeBtn.style.backgroundColor = "#ff5722";
+                learnModeBtn.style.backgroundColor = "#ff5722"; // Pomarańczowy
                 learnModeBtn.style.borderColor = "#ff5722";
+                learnModeBtn.style.color = "white";
+            } else if (learnMode === 3) {
+                learnModeBtn.innerText = "📅 Tryb: KOLOKWIUM 1";
+                learnModeBtn.style.backgroundColor = "#2196F3"; // Niebieski
+                learnModeBtn.style.borderColor = "#2196F3";
+                learnModeBtn.style.color = "white";
+            } else if (learnMode === 4) {
+                learnModeBtn.innerText = "📅 Tryb: KOLOKWIUM 2";
+                learnModeBtn.style.backgroundColor = "#9C27B0"; // Fioletowy
+                learnModeBtn.style.borderColor = "#9C27B0";
                 learnModeBtn.style.color = "white";
             }
             
@@ -547,5 +573,6 @@
 
 </body>
 </html>
+
 
 
